@@ -8,7 +8,6 @@ body{
   font-family: sans-serif;
 }
 
-/* Chrome Button */
 #chrome-btn{
   width:320px;
   height:140px;
@@ -78,7 +77,6 @@ canvas{
   100%{opacity:0; filter:blur(6px); transform:scale(1.08)}
 }
 
-/* MICRO-SCRATCHES OVERLAY */
 #chrome-btn::after{
   content:"";
   position:absolute;
@@ -97,7 +95,6 @@ canvas{
   mix-blend-mode:overlay;
 }
 
-/* Hit line */
 #hit-line{
   position:absolute;
   width:2px;
