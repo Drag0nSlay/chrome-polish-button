@@ -36,7 +36,6 @@ function draw(){
   }
 }
 
-/* Mouse & touch */
 canvas.addEventListener("mousemove", e=>{
   const r = canvas.getBoundingClientRect()
   highlightX = e.clientX - r.left
@@ -48,9 +47,7 @@ canvas.addEventListener("touchmove", e=>{
 canvas.addEventListener("mouseleave", ()=>{ highlightX=null })
 canvas.addEventListener("touchend", ()=>{ highlightX=null })
 
-/* Hit-line + button press effect + metallic sound */
 btn.addEventListener("pointerdown", e=>{
-  // Play metallic sound
   metalSound.currentTime = 0
   metalSound.play()
 
@@ -71,6 +68,5 @@ btn.addEventListener("pointerdown", e=>{
 
 btn.addEventListener("pointerup", ()=>{ setTimeout(()=>btn.classList.remove("active"),2200) })
 
-/* Animation loop */
 function animate(){ draw(); requestAnimationFrame(animate) }
 animate()
