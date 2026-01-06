@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Chrome Button</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chrome Button Library Test</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; background: #eee; }
+    </style>
 </head>
 <body>
 
-<div id="chrome-btn">
-  <canvas id="chrome"></canvas>
-  <div id="label">Button</div>
-  <div id="fingerprint"></div>
-  <div id="hit-line"></div>
-</div>
+    <div id="myButton"></div>
 
-<audio id="metal-sound" src="mixkit-metal-tool-drop-835.wav" preload="auto"></audio>
-
-<script src="script.js"></script>
+<script type="module">
+  import ChromeButton from './script.js';
+  new ChromeButton('#myButton', { label: "Button" });
+</script>
 </body>
 </html>

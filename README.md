@@ -1,6 +1,6 @@
 # Chrome Polish Button
 
-A **Chrome-style interactive button** with live camera reflection, fingerprint highlights, hit-line interaction, and metallic click sound — built using **HTML, CSS, and JavaScript**.
+A high-end, interactive skeuomorphic button featuring live camera reflection, dynamic fingerprint heat-maps, hit-line interaction, and metallic sound effect. Built for luxury UI and futuristic web experiences.
 
 ---
 
@@ -26,21 +26,29 @@ A **Chrome-style interactive button** with live camera reflection, fingerprint h
 
 ## Installation
 
-1. Clone the repo:
-
 ```bash
-git clone https://github.com/yourusername/chrome-polish-button.git
-cd chrome-polish-button
-```
-2. Add a metallic click sound file named `mixkit-metal-tool-drop-835.wav` in the project root.
-(You can use any short metallic sound, e.g., from freesound.org.)
-
-3. Start a local server (Python example):
-```bash
-python -m http.server 8080
+npm install chrome-polish-button
 ```
 
-4. Open your browser at ```http://localhost:8080```
+# Quick Start
+
+1. Import the CSS and the JS module: 
+
+<!--end list-->
+```bash
+import ChromeTactileButton from 'chrome-polish-button';
+import 'chrome-polish-button/style.css';
+
+new ChromeTactileButton('#my-button', { label: "ACTIVATE", soundSrc: "path/to/your/sound.wav" });
+```
+
+2. Add the HTML element:
+<!--end list-->
+```bash
+<div id="my-button"></div>
+```
+
+> The camera reflection is process entirely on the client-side. No video data is recorded or transmitted. This library requires HTTPS for camera access in production.
 
 ---
 
@@ -49,6 +57,7 @@ python -m http.server 8080
 - Press the button to see hit-line + fingerprint animation and hear the metallic click.
 
 ## Technologies
+
 - HTML5 <canvas>
 - CSS3 (transitions, gradients, blend modes)
 - JavaScript (DOM manipulation, MediaDevices API)

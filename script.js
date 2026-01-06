@@ -1,72 +1,115 @@
-const canvas = document.getElementById("chrome")
-const ctx = canvas.getContext("2d")
-const btn = document.getElementById("chrome-btn")
-const hitLine = document.getElementById("hit-line")
-const metalSound = document.getElementById("metal-sound")
+export default class ChromeTactileButton {
+  constructor(elementId, options = {}) {
+    this.container = document.querySelector(elementId);
+    if (!this.container) return;
 
-canvas.width = 320
-canvas.height = 140
+    this.config = {
+      label: options.label || "PUSH",
+      soundSrc: options.soundSrc || "mixkit-metal-tool-drop-835.wav"
+    };
 
-const video = document.createElement("video")
-video.playsInline = true
+    this.highlightX = null;
+    this.init();
+  }
 
-let highlightX = null
+  init() {
+    this.container.classList.add('chrome-btn-container');
+    this.container.innerHTML = `
+      <canvas class="chrome-canvas"></canvas>
+      <div class="chrome-label">${this.config.label}</div>
+      <div class="chrome-fingerprint"></div>
+      <div class="chrome-hit-line"></div>
+    `;
 
-navigator.mediaDevices.getUserMedia({ video:{ facingMode:"user" } })
-  .then(stream => { video.srcObject = stream; video.play(); })
+    this.canvas = this.container.querySelector('.chrome-canvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.hitLine = this.container.querySelector('.chrome-hit-line');
+    this.fingerprint = this.container.querySelector('.chrome-fingerprint');
+    
+    this.canvas.width = 320;
+    this.canvas.height = 140;
 
-function draw(){
-  ctx.clearRect(0,0,canvas.width,canvas.height)
+    this.audio = new Audio(this.config.soundSrc);
+    this.video = document.createElement("video");
+    this.video.setAttribute('autoplay', '');
+    this.video.setAttribute('muted', '');
+    this.video.setAttribute('playsinline', '');
 
-  ctx.save()
-  ctx.globalAlpha = 0.55
-  ctx.filter = "blur(2px) contrast(1.15) brightness(1.1)"
-  ctx.scale(-1,1)
-  ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height)
-  ctx.restore()
+    this.startCamera();
+    this.bindEvents();
+    this.animate();
+  }
 
-  if(highlightX !== null){
-    const p = highlightX / canvas.width
-    const g = ctx.createLinearGradient(0,0,canvas.width,0)
-    g.addColorStop(0,"rgba(255,255,255,.12)")
-    g.addColorStop(p,"rgba(255,255,255,.85)")
-    g.addColorStop(1,"rgba(255,255,255,.12)")
-    ctx.fillStyle = g
-    ctx.fillRect(0,0,canvas.width,canvas.height)
+  async startCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+      this.video.srcObject = stream;
+      await this.video.play();
+    } catch (e) { console.warn("Camera failed", e); }
+  }
+
+  bindEvents() {
+    const getCoords = (e) => {
+      const r = this.container.getBoundingClientRect();
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+      const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+      return { x, y };
+    };
+
+    this.container.addEventListener("pointermove", (e) => { 
+      this.highlightX = getCoords(e).x; 
+    });
+
+    this.container.addEventListener("pointerdown", (e) => {
+      this.container.classList.add('is-pressed');
+      this.audio.currentTime = 0;
+      this.audio.play().catch(()=>{});
+
+      const { x, y } = getCoords(e);
+
+      this.hitLine.style.left = `${x}px`;
+      this.hitLine.classList.remove('active');
+      void this.hitLine.offsetWidth;
+      this.hitLine.classList.add('active');
+
+      this.fingerprint.style.left = `${x}px`;
+      this.fingerprint.style.top = `${y}px`;
+      
+      this.container.classList.remove('animating-fp');
+      void this.container.offsetWidth; 
+      this.container.classList.add('animating-fp');
+    });
+
+    const release = () => this.container.classList.remove('is-pressed');
+    window.addEventListener("pointerup", release);
+    window.addEventListener("pointercancel", release);
+  }
+
+  draw() {
+    const { ctx, canvas, video, highlightX } = this;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.save();
+    ctx.globalAlpha = 0.55;
+    ctx.filter = "blur(3px) contrast(1.2) brightness(1.1) saturate(1.3)";
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.restore();
+
+    if (highlightX !== null) {
+      const p = highlightX / canvas.width;
+      const g = ctx.createLinearGradient(0, 0, canvas.width, 0);
+      g.addColorStop(0, "rgba(255,255,255,0)");
+      g.addColorStop(p, "rgba(255,255,255,0.7)");
+      g.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  animate() {
+    this.draw();
+    requestAnimationFrame(() => this.animate());
   }
 }
-
-canvas.addEventListener("mousemove", e=>{
-  const r = canvas.getBoundingClientRect()
-  highlightX = e.clientX - r.left
-})
-canvas.addEventListener("touchmove", e=>{
-  const r = canvas.getBoundingClientRect()
-  highlightX = e.touches[0].clientX - r.left
-})
-canvas.addEventListener("mouseleave", ()=>{ highlightX=null })
-canvas.addEventListener("touchend", ()=>{ highlightX=null })
-
-btn.addEventListener("pointerdown", e=>{
-  metalSound.currentTime = 0
-  metalSound.play()
-
-  const r = btn.getBoundingClientRect()
-  const x = e.clientX - r.left
-
-  hitLine.style.left = `${x}px`
-  hitLine.style.display = "block"
-  hitLine.classList.remove("active")
-  void hitLine.offsetWidth
-  hitLine.classList.add("active")
-  setTimeout(()=>{ hitLine.classList.remove("active"); hitLine.style.display="none"; },500)
-
-  btn.classList.remove("active")
-  void btn.offsetWidth
-  btn.classList.add("active")
-})
-
-btn.addEventListener("pointerup", ()=>{ setTimeout(()=>btn.classList.remove("active"),2200) })
-
-function animate(){ draw(); requestAnimationFrame(animate) }
-animate()

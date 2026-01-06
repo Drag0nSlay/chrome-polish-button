@@ -1,0 +1,16 @@
+{
+    "name": "chrome-polish-button",
+    "version": "1.0.0",
+    "description": "A high-end skeuomorphic button with live camera reflection and tactile feedback.",
+    "main": "script.js",
+    "files": [
+        "script.js",
+        "style.css",
+        "mixkit-metal-tool-drop-835.wav"
+    ],
+    "keywords": [
+        "ui", "button", "chrome", "skeuomorphism", "camera-reflection", "tactile"
+    ],
+    "author": "Drag0nSlay",
+    "license": "MIT"
+}
