@@ -29,6 +29,7 @@ A high-end, interactive skeuomorphic button featuring live camera reflection, dy
 ```bash
 npm install chrome-polish-button
 ```
+For NPM package, Check it out here: https://www.npmjs.com/package/chrome-polish-button
 
 # Quick Start
 
